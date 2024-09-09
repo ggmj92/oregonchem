@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+.env
+
+# Logs
+logs
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+tmp/
+*.swp
