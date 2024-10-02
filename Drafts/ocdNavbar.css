@@ -1,0 +1,156 @@
+:root {
+  --primary-color: #003F88;
+  --secondary-color: #192A43;
+  --text-color: #FFFFFF;
+  --card-bg-color: #D9D9D9;
+  --border-radius: 44px;
+  --button-radius: 30px;
+}
+
+/* Navbar Base */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 80px;
+  background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 83.5%);
+  /* border-radius: 10px 10px 0 0; */
+  height: 90px;
+}
+
+.logo img {
+  height: 50px;
+}
+
+/* Desktop Menu */
+.desktop-menu {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.desktop-menu li {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 17px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.logout {
+  width: 100px;
+  height: 40px;
+  font-size: 16px;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: var(--button-radius);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* Mobile-specific styles */
+.mobile-only {
+  display: none; /* Hidden on desktop */
+}
+
+/* Navbar Pop-up Hidden by Default */
+.navbar-popup {
+  display: none; /* Ensure it's hidden by default */
+  position: absolute;
+  top: 60px; /* Adjust based on navbar height */
+  width: 100%;
+  background-color: transparent; /* Remove the unwanted grey background */
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 10; /* Ensures the dropdown is above other content */
+}
+
+/* Card styling for the dropdown */
+.card {
+  width: 237px;
+  background: var(--card-bg-color); /* Grey background only on the card */
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-top: 20px;
+  z-index: 20; /* Keep the card above everything */
+}
+
+.mobile-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-menu li {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+/* Toggle Pop-up for Mobile */
+.menu-icon {
+  cursor: pointer;
+}
+
+.menu-icon:hover + .navbar-popup,
+.navbar-popup:hover {
+  display: flex; /* This can also be toggled using JavaScript */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Hide desktop menu, show mobile elements */
+  .desktop-menu {
+      display: none;
+  }
+
+  .mobile-only {
+      display: flex; /* Show mobile elements */
+  }
+
+  .navbar {
+      padding: 8px 20px;
+      height: 60px;
+  }
+
+  .logo img {
+      height: 40px;
+  }
+
+  .menu-icon img {
+      width: 30px;
+      height: 30px;
+  }
+
+  /* Hide logout button in navbar on mobile */
+  .navbar .buttons {
+      display: none;
+  }
+
+  /* Style logout button inside mobile dropdown */
+  .navbar-popup .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+  }
+
+  .navbar-popup .logout {
+      width: 100%;
+      max-width: 150px;
+  }
+}
+
+
+  

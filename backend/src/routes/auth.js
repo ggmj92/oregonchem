@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router(); // Ensure this is correct
+const router = express.Router();
 
 router.post('/verify', async (req, res) => {
     const { idToken } = req.body;

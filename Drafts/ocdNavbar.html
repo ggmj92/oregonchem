@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Navbar</title>
+    <link rel="stylesheet" href="ocdNavbar.css">
+</head>
+
+<body>
+    <!-- Navbar Section -->
+    <script>
+        const menuIcon = document.querySelector('.menu-icon');
+        const navbarPopup = document.querySelector('.navbar-popup');
+    
+        menuIcon.addEventListener('click', () => {
+            if (navbarPopup.style.display === 'none' || navbarPopup.style.display === '') {
+                navbarPopup.style.display = 'flex'; // Show dropdown
+            } else {
+                navbarPopup.style.display = 'none'; // Hide dropdown
+            }
+        });
+    </script>
+    
+    <nav class="navbar">
+        <div class="logo">
+            <img src="./images/oregonchemlogo.png" alt="Logo">
+        </div>
+
+        <!-- Desktop Menu -->
+        <ul class="menu desktop-menu">
+            <li>Inicio</li>
+            <li>Productos</li>
+            <li>Categorías</li>
+            <li>Presentaciones</li>
+            <li>Páginas</li>
+            <li>Ajustes</li>
+        </ul>
+
+ 
+
+        <!-- Logout Button (common for both mobile and desktop) -->
+        <div class="buttons">
+            <button class="logout">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Pop-up Menu -->
+    <div class="navbar-popup mobile-only">
+        <div class="card">
+            <ul class="menu mobile-menu">
+                <li>Inicio</li>
+                <li>Productos</li>
+                <li>Categorías</li>
+                <li>Presentaciones</li>
+                <li>Páginas</li>
+                <li>Ajustes</li>
+            </ul>
+
+            <div class="buttons">
+                <button class="logout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

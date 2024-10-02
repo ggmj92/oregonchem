@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-console.log('Loading service account key from:', process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
 const serviceAccount = require('../utils/serviceAccountKey.json');
 
 if (!admin.apps.length) {
