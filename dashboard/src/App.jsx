@@ -10,8 +10,6 @@ function App() {
     <Router>
       <AuthProvider>
         <div className="App">
-          <Navbar />
-          <Header />
           <Routes />
         </div>
       </AuthProvider>

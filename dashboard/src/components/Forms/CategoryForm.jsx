@@ -42,7 +42,6 @@ const CategoryForm = ({ onCategoryAdded, onClose }) => {
         return;
       }
 
-      console.log("Category created successfully");
       if (onCategoryAdded) onCategoryAdded();
       if (onClose) onClose();
     } catch (error) {

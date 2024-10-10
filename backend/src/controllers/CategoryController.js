@@ -16,11 +16,8 @@ const CategoryController = {
     try {
       const { name } = req.body;
 
-      console.log("Uploaded files:", req.files);
-
       const existingCategory = await Category.findOne({ name });
       if (existingCategory) {
-        console.log("Category already exists:", name);
         return res.status(400).json({ message: "Esa categoría ya existe" });
       }
 
@@ -32,7 +29,6 @@ const CategoryController = {
       }
 
       const category = new Category({ name, images });
-      console.log("Saving category:", { name, images });
 
       await category.save();
       res.status(201).json(category);

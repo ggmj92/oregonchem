@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddleware");
 const ProductController = require("../controllers/ProductController");
 const CategoryController = require("../controllers/CategoryController");
 const PresentationController = require("../controllers/PresentationController");
@@ -8,6 +9,8 @@ const {
   upload,
   firebaseStorageMiddleware,
 } = require("../middlewares/firebaseStorageMiddleware");
+
+router.use(authMiddleware);
 
 const createUploadFields = (sites) => {
   return sites.map((site) => ({ name: site, maxCount: 1 }));

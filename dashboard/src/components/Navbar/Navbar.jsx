@@ -1,15 +1,26 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate
 import logo from "../../images/oregonchemlogo.png";
 import { IoClose, IoMenu } from "react-icons/io5";
+import { useAuth } from "../../contexts/authContext";
+import { doSignOut } from "../../firebase/auth";
 import "./Navbar.css";
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { userLoggedIn, logout } = useAuth(); // Make sure logout is available from context
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const handleLogout = async () => {
+    await doSignOut(); // Sign out the user
+    navigate("/login"); // Redirect to login page after logging out
+  };
+
+  if (!userLoggedIn) return null;
 
   return (
     <>
@@ -46,18 +57,10 @@ const Navbar = () => {
                 Banners
               </NavLink>
             </li>
-            {/* <li className="nav__item">
-              <NavLink to="" className="nav__link">
-                Páginas
-              </NavLink>
-            </li>
             <li className="nav__item">
-              <NavLink to="/ajustes" className="nav__link">
-                Ajustes
-              </NavLink>
-            </li> */}
-            <li className="nav__item">
-              <button className="nav__link logout">Logout</button>
+              <button className="nav__link logout" onClick={handleLogout}>
+                Logout
+              </button>
             </li>
           </ul>
           <div className="nav__close" onClick={toggleMenu}>

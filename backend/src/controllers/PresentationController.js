@@ -15,15 +15,11 @@ const PresentationController = {
   // ADD ONE PRESENTATION
   async addPresentation(req, res) {
     try {
-      console.log("Received body:", req.body);
-
       const { name, type, measure } = req.body;
 
       if (!name) {
         return res.status(400).json({ message: "Name (quantity) is required" });
       }
-
-      console.log("Uploaded files:", req.files);
 
       const images = {};
       for (let i = 1; i <= 5; i++) {
@@ -38,8 +34,6 @@ const PresentationController = {
         measure,
         images,
       });
-
-      console.log("Saving presentation:", { name, type, measure, images });
 
       await presentation.save();
       res.status(201).json(presentation);
