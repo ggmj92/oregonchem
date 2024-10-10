@@ -22,21 +22,22 @@
 }
 
 html, body {
-  height: 100%; /* Ensure the body takes up full height */
+  height: 100%; 
   margin: 0;
   padding: 0;
   background-color: var(--body-color);
-  background-size: cover; /* Make the background stretch fully */
-  background-attachment: fixed; /*edit*/
+  background-size: cover; 
+  background-attachment: fixed; 
   color: var(--text-color);
   font-family: var(--body-font);
-  line-height: 1.5; /* Adjust line height for readability */
+  line-height: 1.5; 
 }
 
 h1 {
   font-size: 44px;
-  margin-bottom: -5px;
+  margin-bottom: 10px;
   text-align: center;
+  text-shadow: 0 1px 2px #1e3c72;
 }
 
 ul {

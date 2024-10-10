@@ -36,11 +36,6 @@ const Products = () => {
     <div className="container">
       <h1>Productos</h1>
       <ProductForm />
-      {/* <div className="product-list">
-        {products.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
-      </div> */}
     </div>
   );
 };

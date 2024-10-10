@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 
 const PresentationForm = ({ onPresentationAdded }) => {
-  const [name, setName] = useState("");
   const [type, setType] = useState("solido");
-  const [measure, setMeasure] = useState("g")
-  const [presentationImages, setPresentationImages] = useState([
-    { file: null, previewUrl: null },
-    { file: null, previewUrl: null },
-    { file: null, previewUrl: null },
-    { file: null, previewUrl: null },
-    { file: null, previewUrl: null },
-  ]);
+  const [measure, setMeasure] = useState("g");
+  const [quantity, setQuantity] = useState("");
+  const [presentationImages, setPresentationImages] = useState(
+    Array(5).fill({ file: null, previewUrl: null })
+  );
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // To differentiate between success and error messages
+  const [messageType, setMessageType] = useState("");
 
   const handleImageUpload = (event, index) => {
     const file = event.target.files[0];
@@ -24,129 +20,154 @@ const PresentationForm = ({ onPresentationAdded }) => {
     }
   };
 
+  const renderMeasurementOptions = () => {
+    if (type === "solido") {
+      return (
+        <>
+          <option value="g">Gramos (g)</option>
+          <option value="kg">Kilogramos (kg)</option>
+        </>
+      );
+    } else if (type === "liquido") {
+      return (
+        <>
+          <option value="ml">Mililitros (ml)</option>
+          <option value="L">Litros (L)</option>
+          <option value="gal">Galones (gal)</option>
+        </>
+      );
+    }
+  };
+
+  const handleTypeChange = (event) => {
+    const newType = event.target.value;
+    setType(newType);
+
+    if (newType === "solido") {
+      setMeasure("g");
+    } else if (newType === "liquido") {
+      setMeasure("ml");
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const formData = new FormData();
+    formData.append("name", quantity);
+    formData.append("type", type); //
+    formData.append("measure", measure);
+
+    presentationImages.forEach((imageObj, index) => {
+      if (imageObj.file) {
+        formData.append(`site${index + 1}`, imageObj.file);
+      }
+    });
+
     try {
       const response = await fetch(
         "http://localhost:3000/presentaciones/nueva",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            type,
-          }),
+          body: formData,
         }
       );
 
       if (response.ok) {
         const data = await response.json();
         setMessage(`Presentación añadida: ${data.name}`);
-        setMessageType("success"); // Indicate success
-        setName("");
-        setType("solido");
-        setMeasure("g");
-
-        // Notify parent component that a new presentation has been added
-        if (onPresentationAdded) {
-          onPresentationAdded();
-        }
+        setMessageType("success");
       } else {
-        setMessage("Error al añadir presentación");
-        setMessageType("error"); // Indicate error
+        const errorData = await response.json();
+        setMessage(`Error al añadir presentación: ${errorData.message}`);
+        setMessageType("error");
       }
     } catch (error) {
       setMessage("Error al añadir presentación");
-      setMessageType("error"); // Indicate error
+      setMessageType("error");
     }
   };
 
   return (
-    <>
-      <div className="form-container">
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="type" className="card-label">
-              Tipo de presentación:
-            </label>
-            <select
-              id="type"
-              value={type}
-              onChange={(event) => setType(event.target.value)}
-              required
-              className="input-field"
-            >
-              <option value="solido">Sólido</option>
-              <option value="liquido">Líquido</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="type" className="card-label">
-              Medida:
-            </label>
-            <select
-              id="type"
-              value={type}
-              onChange={(event) => setType(event.target.value)}
-              required
-              className="input-field"
-            >
-              <option value="gramos">g</option>
-              <option value="kilos">kg</option>
-              <option value="mililitros">ml</option>
-              <option value="litros">L</option>
-              <option value="galones">gal</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="name" className="card-label">
-              Cantidad:
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              className="input-field"
-              placeholder="Introduzca cantidad numérica"
-              required
-            />
-          </div>
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="type" className="card-label">
+            Tipo de presentación:
+          </label>
+          <select
+            id="type"
+            value={type}
+            onChange={handleTypeChange}
+            required
+            className="input-field"
+          >
+            <option value="solido">Sólido</option>
+            <option value="liquido">Líquido</option>
+          </select>
+        </div>
 
-          {/* Product Images */}
-          <div className="form-group">
-            <label className="card-label">Imágenes</label>
-            <div className="image-container">
-              {presentationImages.map((imageObj, index) => (
-                <div key={index} className="image-circle">
-                  <label
-                    htmlFor={`presentation-image-${index}`}
-                    className="image-upload-label"
-                  >
-                    {imageObj.previewUrl ? (
-                      <img
-                        src={imageObj.previewUrl}
-                        alt={`Presentation ${index + 1}`}
-                        className="image-preview"
-                      />
-                    ) : (
-                      <span className="plus-sign">+</span>
-                    )}
-                  </label>
-                  <input
-                    type="file"
-                    id={`presentation-image-${index}`}
-                    className="image-upload-input"
-                    accept="image/*"
-                    onChange={(event) => handleImageUpload(event, index)}
-                  />
-                </div>
-              ))}
-            </div>
+        <div className="form-group">
+          <label htmlFor="measure" className="card-label">
+            Medida:
+          </label>
+          <select
+            id="measure"
+            value={measure}
+            onChange={(event) => setMeasure(event.target.value)}
+            required
+            className="input-field"
+          >
+            {renderMeasurementOptions()}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="quantity" className="card-label">
+            Cantidad:
+          </label>
+          <input
+            type="number"
+            id="quantity"
+            className="input-field"
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
+            required
+            min="0"
+            step="any"
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="card-label">Imágenes</label>
+          <div className="image-container">
+            {presentationImages.map((imageObj, index) => (
+              <div key={index} className="image-circle">
+                <label
+                  htmlFor={`presentation-image-${index}`}
+                  className="image-upload-label"
+                >
+                  {imageObj.previewUrl ? (
+                    <img
+                      src={imageObj.previewUrl}
+                      alt={`Presentation ${index + 1}`}
+                      className="image-preview"
+                    />
+                  ) : (
+                    <span className="plus-sign">+</span>
+                  )}
+                </label>
+                <input
+                  type="file"
+                  id={`presentation-image-${index}`}
+                  className="image-upload-input"
+                  accept="image/*"
+                  onChange={(event) => handleImageUpload(event, index)}
+                />
+              </div>
+            ))}
           </div>
-        </form>
+        </div>
+
         <div className="form-group">
           <button type="submit" className="submit-button">
             Añadir presentación
@@ -162,8 +183,8 @@ const PresentationForm = ({ onPresentationAdded }) => {
             {message}
           </p>
         )}
-      </div>
-    </>
+      </form>
+    </div>
   );
 };
 

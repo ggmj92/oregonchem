@@ -11,26 +11,29 @@ const CategoryController = {
     }
   },
 
-  // GET ONE CATEGORY BY ITS ID
-
   // ADD A CATEGORY
   async addCategory(req, res) {
     try {
       const { name } = req.body;
-      const images = {
-        site1: req.files["site1"] ? req.files["site1"][0].downloadURL : null,
-        site2: req.files["site2"] ? req.files["site2"][0].downloadURL : null,
-        site3: req.files["site3"] ? req.files["site3"][0].downloadURL : null,
-        site4: req.files["site4"] ? req.files["site4"][0].downloadURL : null,
-        site5: req.files["site5"] ? req.files["site5"][0].downloadURL : null,
-      };
+
+      console.log("Uploaded files:", req.files);
 
       const existingCategory = await Category.findOne({ name });
       if (existingCategory) {
+        console.log("Category already exists:", name);
         return res.status(400).json({ message: "Esa categoría ya existe" });
       }
 
+      const images = {};
+      for (let i = 1; i <= 5; i++) {
+        if (req.files[`site${i}`] && req.files[`site${i}`][0]) {
+          images[`site${i}`] = req.files[`site${i}`][0].downloadURL;
+        }
+      }
+
       const category = new Category({ name, images });
+      console.log("Saving category:", { name, images });
+
       await category.save();
       res.status(201).json(category);
     } catch (error) {

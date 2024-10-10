@@ -1,29 +1,18 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const BannerSchema = new mongoose.Schema({
-    name: {
-        site1: { type: String },
-        site2: { type: String },
-        site3: { type: String },
-        site4: { type: String },
-        site5: { type: String }
+const BannerSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    site: {
+      type: String,
+      enum: ["site1", "site2", "site3", "site4", "site5"],
+      required: true,
     },
-    images: {
-        site1: { type: String },
-        site2: { type: String },
-        site3: { type: String },
-        site4: { type: String },
-        site5: { type: String },
-    },
-    // links: {
-    //     site1: { type: String },
-    //     site2: { type: String },
-    //     site3: { type: String },
-    //     site4: { type: String },
-    //     site5: { type: String },
-    // },
-}, { timestamps: true });
+    imageUrl: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
-const Banner = mongoose.model('Banner', BannerSchema);
+const Banner = mongoose.model("Banner", BannerSchema);
 
 module.exports = Banner;

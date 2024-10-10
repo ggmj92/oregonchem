@@ -9,26 +9,24 @@
 </head>
 
 <body>
-    <!-- Navbar Section -->
     <script>
         const menuIcon = document.querySelector('.menu-icon');
         const navbarPopup = document.querySelector('.navbar-popup');
-    
+
         menuIcon.addEventListener('click', () => {
             if (navbarPopup.style.display === 'none' || navbarPopup.style.display === '') {
-                navbarPopup.style.display = 'flex'; // Show dropdown
+                navbarPopup.style.display = 'flex';
             } else {
-                navbarPopup.style.display = 'none'; // Hide dropdown
+                navbarPopup.style.display = 'none';
             }
         });
     </script>
-    
+
     <nav class="navbar">
         <div class="logo">
             <img src="./images/oregonchemlogo.png" alt="Logo">
         </div>
 
-        <!-- Desktop Menu -->
         <ul class="menu desktop-menu">
             <li>Inicio</li>
             <li>Productos</li>
@@ -38,15 +36,11 @@
             <li>Ajustes</li>
         </ul>
 
- 
-
-        <!-- Logout Button (common for both mobile and desktop) -->
         <div class="buttons">
             <button class="logout">Logout</button>
         </div>
     </nav>
 
-    <!-- Mobile Pop-up Menu -->
     <div class="navbar-popup mobile-only">
         <div class="card">
             <ul class="menu mobile-menu">

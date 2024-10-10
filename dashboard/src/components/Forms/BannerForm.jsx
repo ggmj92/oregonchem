@@ -1,42 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const BannerForm = () => {
   const [name, setName] = useState("");
-  const [site, setSite] = useState("quimica industrial");
-  const [bannerImage, setBannerImage] = useState([
-    { file: null, previewUrl: null },
-  ]);
+  const [site, setSite] = useState("site1");
+  const [bannerImage, setBannerImage] = useState({
+    file: null,
+    previewUrl: null,
+  });
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
-  const handleImageUpload = (event, index) => {
+  useEffect(() => {
+    return () => {
+      if (bannerImage.previewUrl) {
+        URL.revokeObjectURL(bannerImage.previewUrl);
+      }
+    };
+  }, [bannerImage.previewUrl]);
+
+  const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const previewUrl = URL.createObjectURL(file);
-      const updatedImages = [...bannerImage];
-      updatedImages[index] = { file, previewUrl };
-      setBannerImage(updatedImages);
+      setBannerImage({ file, previewUrl });
     }
   };
 
+  const handleImageClick = () => {
+    document.getElementById("bannerImageInput").click();
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
     const formData = new FormData();
     formData.append("name", name);
+    formData.append("site", site);
+    formData.append("image", bannerImage.file);
 
     try {
-      const response = await fetch("http://localhost:3000/banners/nueva", {
+      const response = await fetch("http://localhost:3000/banners/nuevo", {
         method: "POST",
         body: formData,
       });
-
-      if (response.ok) {
-        console.log("Banner created successfully");
-        if (onBannerAdded) onBannerAdded();
-        if (onClose) onClose();
-      } else {
-        console.error("Error creating banner");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error creating banner");
       }
+      const data = await response.json();
+      setMessageType("success");
+      setMessage(data.message);
     } catch (error) {
-      console.error("Error submitting banner", error);
+      setMessageType("error");
+      setMessage("Error creating banner");
     }
   };
 
@@ -69,45 +84,56 @@ const BannerForm = () => {
               required
               className="input-field"
             >
-              <option value="web1">Qúimica Industrial</option>
-              <option value="web2">Web 2</option>
-              <option value="web3">Web 3</option>
-              <option value="web4">Web 4</option>
-              <option value="web5">Web 5</option>
+              <option value="site1">Química Industrial</option>
+              <option value="site2">Web 2</option>
+              <option value="site3">Web 3</option>
+              <option value="site4">Web 4</option>
+              <option value="site5">Web 5</option>
             </select>
           </div>
 
           <div className="form-group">
             <label className="card-label">Imágen</label>
             <div className="image-container">
-              {bannerImage.map((imageObj, index) => (
-                <div key={index} className="image-circle">
-                  <label className="image-upload-label">
-                    {imageObj.previewUrl ? (
-                      <img
-                        src={imageObj.previewUrl}
-                        className="image-preview"
-                      />
-                    ) : (
-                      <span className="plus-sign">+</span>
-                    )}
-                  </label>
-                  <input
-                    type="file"
-                    className="image-upload-input"
-                    accept="image/*"
-                    onChange={(event) => handleImageUpload(event, index)}
-                  />
-                </div>
-              ))}
+              <div className="image-circle" onClick={handleImageClick}>
+                <label className="image-upload-label">
+                  {bannerImage.previewUrl ? (
+                    <img
+                      src={bannerImage.previewUrl}
+                      className="image-preview"
+                      alt="preview"
+                    />
+                  ) : (
+                    <span className="plus-sign">+</span>
+                  )}
+                </label>
+                <input
+                  type="file"
+                  id="bannerImageInput"
+                  className="image-upload-input"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                />
+              </div>
             </div>
           </div>
+          <div className="form-group">
+            <button type="submit" className="submit-button">
+              Añadir banner
+            </button>
+          </div>
+
+          {message && (
+            <p
+              className={
+                messageType === "success" ? "success-message" : "error-message"
+              }
+            >
+              {message}
+            </p>
+          )}
         </form>
-        <div className="form-group">
-          <button type="submit" className="submit-button">
-            Añadir banner
-          </button>
-        </div>
       </div>
     </>
   );

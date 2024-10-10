@@ -14,14 +14,14 @@
 .form-group {
   flex: 1 1 calc(33.333% - 20px); 
   background-color: white;
+  /* border: solid 0.5px #1e3c72; */
   border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  box-shadow: 0 1px 4px #1e3c72;
   display: flex;
   flex-direction: column; 
   justify-content: flex-start;
   gap: 10px;
-  padding: 10px;
 }
 
 .card-label {
@@ -30,6 +30,7 @@
   margin-bottom: 5px;
   display: block;
   color: #1e3c72;
+  text-decoration: underline #1e3c72;
 }
 
 .input-field,
@@ -84,14 +85,13 @@
   display: none;
 }
 
-
 .plus-sign {
   font-size: 50px;
   color: #1e3c72;
   position: absolute;
   top: 50%; /* Move to the middle vertically */
   left: 50%; /* Move to the middle horizontally */
-  transform: translate(-51%, -57%); /* Adjust to perfectly center it */
+  transform: translate(-52%, -52%); /* Adjust to perfectly center it */
 }
 
 .image-preview {

@@ -18,10 +18,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-
 const multerStorage = multer.memoryStorage();
 
-const uploadFileToFirebase = async (file, path) => {
+const uploadFileToFirebase = (file, path) => {
   const storageRef = ref(storage, path);
   const uploadTask = uploadBytesResumable(storageRef, file.buffer);
 
@@ -33,7 +32,7 @@ const uploadFileToFirebase = async (file, path) => {
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log(`Upload is ${progress}% done`);
       },
-      (error) => reject(error),
+      reject,
       async () => {
         try {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
@@ -46,63 +45,114 @@ const uploadFileToFirebase = async (file, path) => {
   });
 };
 
-const firebaseStorageMiddleware = (req, res, next) => {
-  if (!req.files) {
-    return next();
-  }
-
-  const { id, name } = req.body;
-
-  // Ensure 'name' is present in the body for constructing paths
-  if (!name) {
-    return res
-      .status(400)
-      .json({ message: "Missing name field in the request body" });
-  }
-
-  const uploadPromises = Object.keys(req.files).map((fieldName) => {
+const handleFileUploads = async (req, basePath, fileName) => {
+  const uploadPromises = Object.keys(req.files).flatMap((fieldName) => {
     const files = req.files[fieldName];
-    return Promise.all(
-      files.map((file) => {
-        let storagePath;
-
-        if (req.originalUrl.includes("/productos")) {
-          // Using product name for path
-          storagePath = `products/${name}/${fieldName}/${file.originalname}`;
-        } else if (req.originalUrl.includes("/categorias")) {
-          // Using category name for path
-          storagePath = `categories/${name}/${fieldName}/${file.originalname}`;
-        } else {
-          return Promise.reject(new Error("Invalid route for file upload"));
-        }
-
-        return uploadFileToFirebase(file, storagePath).then((downloadURL) => {
-          file.downloadURL = downloadURL;
-          return file;
-        });
-      })
-    );
+    return files.map(async (file) => {
+      const fileExtension = file.originalname.split(".").pop();
+      const storagePath = `${basePath}/${fileName}/${fieldName}/${fileName}_${fieldName}.${fileExtension}`;
+      const downloadURL = await uploadFileToFirebase(file, storagePath);
+      return { ...file, downloadURL };
+    });
   });
 
-  Promise.all(uploadPromises.flat())
-    .then(() => {
-      next();
-    })
-    .catch((error) => {
-      console.error("Error uploading files to Firebase storage:", error);
-      res
-        .status(500)
-        .json({
-          message: "Error uploading files to Firebase storage",
-          error: error.message,
-        });
-    });
+  const uploadedFiles = await Promise.all(uploadPromises);
+  req.files = uploadedFiles.reduce((acc, file) => {
+    const key = file.fieldname;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(file);
+    return acc;
+  }, {});
+
+  return req.files;
+};
+
+const firebaseStorageMiddleware = async (req, res, next) => {
+  const {
+    originalUrl,
+    file,
+    files,
+    body: { name },
+  } = req;
+
+  if (!file && !files) return next();
+
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+
+  const site =
+    (req.files && Object.keys(req.files).find((field) => req.files[field])) ||
+    "site1";
+
+  if (originalUrl.includes("/productos")) {
+    try {
+      req.files = await handleFileUploads(req, `products`, name);
+      return next();
+    } catch (error) {
+      console.error("Error uploading product files:", error);
+      return res.status(500).json({
+        message: "Error uploading product files",
+        error: error.message,
+      });
+    }
+  }
+
+  if (originalUrl.includes("/categorias")) {
+    try {
+      req.files = await handleFileUploads(req, `categories`, name);
+      return next();
+    } catch (error) {
+      console.error("Error uploading category files:", error);
+      return res.status(500).json({
+        message: "Error uploading category files",
+        error: error.message,
+      });
+    }
+  }
+
+  if (originalUrl.includes("/presentaciones")) {
+    try {
+      req.files = await handleFileUploads(req, `presentations`, name);
+      return next();
+    } catch (error) {
+      console.error("Error uploading presentation files:", error);
+      return res.status(500).json({
+        message: "Error uploading presentation files",
+        error: error.message,
+      });
+    }
+  }
+
+  if (originalUrl.includes("/banners")) {
+    const site = req.body.site || "site1";
+
+    if (!file) {
+      return res.status(400).json({ message: "File is required for banners" });
+    }
+
+    try {
+      const fileExtension = file.originalname.split(".").pop();
+      const storagePath = `banners/${site}/${name}_${site}.${fileExtension}`;
+      console.log(`Uploading to path: ${storagePath}`);
+      file.downloadURL = await uploadFileToFirebase(file, storagePath);
+      return next();
+    } catch (error) {
+      console.error("Error uploading banner file:", error);
+      return res.status(500).json({
+        message: "Error uploading banner image",
+        error: error.message,
+      });
+    }
+  }
+
+  return res.status(400).json({ message: "Invalid route for file upload" });
 };
 
 const upload = multer({
   storage: multerStorage,
   limits: {
-    fileSize: 1024 * 1024 * 3, // 3 MB limit
+    fileSize: 1024 * 1024 * 3,
   },
 });
 

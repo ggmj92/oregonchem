@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const routes = require("./src/routes/apiRoutes");
 const authRouter = require("./src/routes/auth");
+const bodyParser = require("body-parser");
 
 const app = express();
 
@@ -13,8 +14,11 @@ const PORT = process.env.PORT || 3000;
 dbConnection();
 
 app.use(cors());
-app.use(express.json()); // Parse the request body as JSON
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(
+  express.text({ type: "application/x-www-form-urlencoded", limit: "10mb" })
+);
+app.use(bodyParser.json({ type: "application/json; charset=utf-8" }));
 
 app.use(express.static("public"));
 

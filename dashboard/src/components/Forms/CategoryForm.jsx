@@ -21,7 +21,7 @@ const CategoryForm = ({ onCategoryAdded, onClose }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
     const formData = new FormData();
     formData.append("name", categoryName);
 
@@ -35,15 +35,19 @@ const CategoryForm = ({ onCategoryAdded, onClose }) => {
         body: formData,
       });
 
-      if (response.ok) {
-        console.log("Category created successfully");
-        if (onCategoryAdded) onCategoryAdded();
-        if (onClose) onClose();
-      } else {
-        console.error("Error creating category");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error creating category:", errorData);
+        alert(`Error: ${errorData.message}`);
+        return;
       }
+
+      console.log("Category created successfully");
+      if (onCategoryAdded) onCategoryAdded();
+      if (onClose) onClose();
     } catch (error) {
       console.error("Error submitting category", error);
+      alert("There was an error submitting the category. Please try again.");
     }
   };
 
@@ -93,12 +97,13 @@ const CategoryForm = ({ onCategoryAdded, onClose }) => {
               ))}
             </div>
           </div>
+
+          <div className="form-group">
+            <button type="submit" className="submit-button">
+              Añadir categoría
+            </button>
+          </div>
         </form>
-        <div className="form-group">
-          <button type="submit" className="submit-button">
-            Añadir categoría
-          </button>
-        </div>
       </div>
     </>
   );

@@ -5,8 +5,8 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Assuming you have the corresponding styles
-import logo from "../../images/oregonchemlogo.png"; // Assuming the correct path to the logo
+import "./Login.css";
+import logo from "../../images/oregonchemlogo.png";
 import emailIcon from "../../images/emailicon.png";
 import passwordIcon from "../../images/passwordicon.png";
 
@@ -70,7 +70,7 @@ const Login = () => {
           <div className="login_separator"></div>
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Contraseña"
             className="login_input_field"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -93,7 +93,7 @@ const Login = () => {
         className="forgot-password"
         onClick={handleResetPassword}
       >
-        Forgot my password
+        Recuperar contraseña
       </a>
     </div>
     </>
