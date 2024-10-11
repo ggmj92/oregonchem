@@ -21,6 +21,7 @@ const sites = ["site1", "site2", "site3", "site4", "site5"];
 // PRODUCTS
 router.get("/productos", ProductController.getAllProducts);
 router.get("/productos/:id/:site", ProductController.getProductByIdAndSite);
+
 router.post(
   "/productos/nuevo",
   upload.fields(createUploadFields(sites)),
