@@ -14,12 +14,11 @@ const PORT = process.env.PORT || 3000;
 dbConnection();
 
 app.use(cors());
+app.use(bodyParser.json({ type: "application/json; charset=utf-8" }));
 app.use(express.json());
 app.use(
   express.text({ type: "application/x-www-form-urlencoded", limit: "10mb" })
 );
-app.use(bodyParser.json({ type: "application/json; charset=utf-8" }));
-
 app.use(express.static("public"));
 
 app.use("/", routes);
@@ -27,7 +26,7 @@ app.use("/auth", authRouter);
 
 app.use((err, req, res, next) => {
   console.error("Error stack:", err.stack);
-  res.status(500).send("Something broke!");
+  res.status(err.status || 500).send(err.message || "Something broke!");
 });
 
 app.listen(PORT, () => {
